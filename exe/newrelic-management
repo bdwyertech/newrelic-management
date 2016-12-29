@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# encoding: UTF-8
+# NewRelic - Management
+# Brian Dwyer - Intelligent Digital Services - 12/28/16
+
+lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+# => Catch Ctrl+C's to avoid stack traces
+Signal.trap('INT') { abort }
+
+require 'newrelic-management'
+
+# => Launch the Plugin
+NewRelicManagement::CLI.run(ARGV)
