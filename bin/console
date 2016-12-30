@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# rubocop: disable LineLength
 
 lib = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
@@ -6,12 +7,26 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'bundler/setup'
 require 'newrelic-management'
 
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
+# => Use the Pry Console
+require 'pry'
 
-# (If you use this, don't forget to add pry to your Gemfile!)
-# require "pry"
-# Pry.start
+# => Custom Pry Commands
+command_set = Pry::CommandSet.new do
+  command('reload', 'Reloads the Gem') do
+    reload_gem
+    output.puts 'Gem Reloaded'
+  end
 
-require 'irb'
-IRB.start
+  helpers do
+    def reload_gem
+      files = $LOADED_FEATURES.select { |feat| feat =~ %r{\/newrelic-management\/} }
+      files.each { |file| load file }
+    end
+  end
+end
+
+Pry::Commands.import command_set
+Pry.config.prompt_name = 'newrelic-management'
+
+ARGV.clear
+Pry.start
