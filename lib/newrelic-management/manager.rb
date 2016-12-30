@@ -22,8 +22,8 @@ module NewRelicManagement
 
     # => Manage Alerts
     def manage_alerts_fromfile
-      Util.parse_json_config(Config.config_file)['manage']['alerts'].each do |alert|
-        manage_alert(alert, labels)
+      Util.parse_json_config(Config.config_file, false)['manage']['alerts'].each do |alert|
+        manage_alert(alert['name'], alert['labels'])
       end
     end
 
