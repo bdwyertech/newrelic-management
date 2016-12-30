@@ -36,6 +36,11 @@ module NewRelicManagement
     # => Management Configuration
     define_setting :manage, {}
 
+    # => Alert Management Configuration
+    define_setting :alerts,
+                   # => Find entities matching any tag, instead of all tags
+                   match_any: false
+
     #
     # => Facilitate Dynamic Addition of Configuration Values
     #

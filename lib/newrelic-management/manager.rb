@@ -23,7 +23,11 @@ module NewRelicManagement
     # => Manage Alerts
     def manage_alerts_fromfile
       Util.parse_json_config(Config.config_file, false)['manage']['alerts'].each do |alert|
-        manage_alert(alert['name'], alert['labels'])
+        # => Set the Filtering Policy
+        Config.alerts[:match_any] = alert['match_any'] ? true : false
+
+        # => Manage the Alerts
+        manage_alert(alert['name'], alert['labels'], alert['exclude'])
       end
     end
 
@@ -31,17 +35,32 @@ module NewRelicManagement
       manage_alert('RAM Utilization', ['Environment:Production'])
     end
 
-    def manage_alert(alert, labels)
+    def manage_alert(alert, labels, exclude = []) # rubocop: disable AbcSize, MethodLength
       conditions = find_alert_conditions(alert) || return
       tagged_entities = find_labeled(labels)
+      excluded = find_excluded(exclude)
+
       conditions.each do |condition|
         next unless condition['type'] == 'servers_metric'
         existing_entities = condition['entities']
-        to_add = tagged_entities.map(&:to_i) - existing_entities.map(&:to_i)
-        to_add.each do |entity|
-          # => PSUEDO: Next if Excluded from Tag
-          Client.alert_add_entity(entity, condition['id'], 'Server')
-        end
+
+        to_add = tagged_entities.map(&:to_i) - existing_entities.map(&:to_i) - excluded
+        to_delete = excluded & existing_entities.map(&:to_i)
+
+        add_to_alert(to_add, condition['id'])
+        delete_from_alert(to_delete, condition['id'])
+      end
+    end
+
+    def add_to_alert(entities, condition_id, type = 'Server')
+      Array(entities).each do |entity|
+        Client.alert_add_entity(entity, condition_id, type)
+      end
+    end
+
+    def delete_from_alert(entities, condition_id, type = 'Server')
+      Array(entities).each do |entity|
+        Client.alert_delete_entity(entity, condition_id, type)
       end
     end
 
@@ -70,6 +89,19 @@ module NewRelicManagement
       Client.alert_conditions(policy_id)
     end
 
+    def find_excluded(excluded)
+      result = []
+      Array(excluded).each do |exclude|
+        if exclude.include?(':')
+          find_labeled(exclude).each { |x| result << x }
+          next
+        end
+        res = Client.get_server(exclude)
+        result << res['id'] if res
+      end
+      result
+    end
+
     #######################
     # =>    Servers    <= #
     #######################
@@ -93,7 +125,7 @@ module NewRelicManagement
 
     # => Find Servers Matching a Label
     # => Example: find_labeled(['Role:API', 'Environment:Production'])
-    def find_labeled(labels) # rubocop: disable AbcSize
+    def find_labeled(labels, match_any = Config.alerts[:match_any]) # rubocop: disable AbcSize, MethodLength
       list = list_labels
       labeled = []
       Array(labels).select do |lbl|
@@ -102,12 +134,15 @@ module NewRelicManagement
         end
       end
 
-      # => Array(labeled) should contain one array per label
-      # => # => If it does not, it means the label is missing or misspelled
-      return [] unless labeled.count == labels.count
+      unless match_any
+        # => Array(labeled) should contain one array per label
+        # => # => If it does not, it means the label is missing or misspelled
+        return [] unless labeled.count == Array(labels).count
 
-      # => Return Only those matching All Labels
-      Util.common_array(labeled)
+        # => Return Only those matching All Labels
+        return Util.common_array(labeled)
+      end
+      labeled.flatten.uniq
     end
   end
 end

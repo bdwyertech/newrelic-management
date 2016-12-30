@@ -44,6 +44,10 @@ module NewRelicManagement
       }
     end
 
+    #
+    # => Alerts
+    #
+
     # => List Alert Policies
     def alert_policies
       nr_api.get(url('alerts_policies')).body['policies']
@@ -56,6 +60,24 @@ module NewRelicManagement
       nr_api.get(url('alerts_conditions'), policy_id: policy).body
     end
 
+    # => Add an Entitity to an Existing Alert Policy
+    def alert_add_entity(entity_id, condition_id, entity_type = 'Server')
+      nr_api.put do |req|
+        req.url url('alerts_entity_conditions', entity_id)
+        req.params['entity_type'] = entity_type
+        req.params['condition_id'] = condition_id
+      end
+    end
+
+    # => Add an Entitity to an Existing Alert Policy
+    def alert_delete_entity(entity_id, condition_id, entity_type = 'Server')
+      nr_api.delete do |req|
+        req.url url('alerts_entity_conditions', entity_id)
+        req.params['entity_type'] = entity_type
+        req.params['condition_id'] = condition_id
+      end
+    end
+
     # => List the Labels
     def labels
       nr_api.get(url('labels')).body['labels']
@@ -63,10 +85,9 @@ module NewRelicManagement
       []
     end
 
-    # => List the Servers with a Label
-    def servers_labeled
-      nr_api.get(url('servers'), 'filter[labels]' => 'Environment:Production').body
-    end
+    #
+    # => Servers
+    #
 
     # => List the Servers Reporting to NewRelic
     def servers
@@ -75,20 +96,40 @@ module NewRelicManagement
       []
     end
 
+    # => Get Info for Specific Server
+    def get_server(server)
+      srv = get_server_id(server)
+      srv ? srv : get_server_name(server)
+    end
+
+    # => Get a Server based on ID
+    def get_server_id(server_id)
+      return nil unless server_id =~ /^[0-9]+$/
+      ret = nr_api.get(url('servers', server_id)).body
+      ret['server']
+    rescue Faraday::ResourceNotFound, NoMethodError
+      nil
+    end
+
+    # => Get a Server based on Name
+    def get_server_name(server, exact = true)
+      ret = nr_api.get(url('servers'), 'filter[name]' => server).body
+      return ret['servers'] unless exact
+      ret['servers'].find { |x| x['name'].casecmp(server).zero? }
+    rescue NoMethodError
+      nil
+    end
+
+    # => List the Servers with a Label
+    def get_servers_labeled(labels)
+      label_query = Array(labels).reject { |x| !x.include?(':') }.join(';')
+      return [] unless label_query
+      nr_api.get(url('servers'), 'filter[labels]' => label_query).body
+    end
+
     # => Delete a Server from NewRelic
     def delete_server(server_id)
       nr_api.delete(url('servers', server_id)).body
-    end
-
-    # => Add an Entitity to an Existing Alert Policy
-    def alert_add_entity(entity_id, condition_id, entity_type = 'Server')
-      puts url('alerts_entity_conditions', entity_id)
-      puts "entity_type=#{entity_type}&condition_id=#{condition_id}"
-      nr_api.put do |req|
-        req.url url('alerts_entity_conditions', entity_id)
-        req.params['entity_type'] = entity_type
-        req.params['condition_id'] = condition_id
-      end
     end
 
     def url(*args)
