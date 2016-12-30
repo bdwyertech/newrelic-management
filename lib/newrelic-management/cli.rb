@@ -36,7 +36,7 @@ module NewRelicManagement
     end
 
     # => Launch the Application
-    def run(argv = ARGV) # rubocop: disable AbcSize, MethodLength
+    def run(argv = ARGV) # rubocop: disable AbcSize
       # => Parse CLI Configuration
       cli = Options.new
       cli.parse_options(argv)

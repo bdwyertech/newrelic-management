@@ -28,7 +28,7 @@ module NewRelicManagement
         client.use Faraday::Response::RaiseError
         client.use FaradayMiddleware::EncodeJson
         client.use FaradayMiddleware::ParseJson, content_type: /\bjson$/
-        client.response :logger if Config.environment.casecmp('development').zero? # => Log Requests to STDOUT
+        client.response :logger if Config.environment.to_s.casecmp('development').zero? # => Log Requests to STDOUT
         client.adapter Faraday.default_adapter #:net_http_persistent
       end
     end
@@ -66,8 +66,6 @@ module NewRelicManagement
     # => List the Servers with a Label
     def servers_labeled
       nr_api.get(url('servers'), 'filter[labels]' => 'Environment:Production').body
-    # => rescue NoMethodError
-    # =>   []
     end
 
     # => List the Servers Reporting to NewRelic
