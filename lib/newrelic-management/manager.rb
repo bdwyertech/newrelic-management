@@ -93,7 +93,7 @@ module NewRelicManagement
 
     # => Find Servers Matching a Label
     # => Example: find_labeled(['Role:API', 'Environment:Production'])
-    def find_labeled(labels)
+    def find_labeled(labels) # rubocop: disable AbcSize
       list = list_labels
       labeled = []
       Array(labels).select do |lbl|
@@ -101,6 +101,11 @@ module NewRelicManagement
           labeled.push(Array(mtch['links']['servers']))
         end
       end
+
+      # => Array(labeled) should contain one array per label
+      # => # => If it does not, it means the label is missing or misspelled
+      return [] unless labeled.count == labels.count
+
       # => Return Only those matching All Labels
       Util.common_array(labeled)
     end
