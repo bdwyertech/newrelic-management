@@ -9,6 +9,7 @@
 # All rights reserved - Do Not Redistribute
 #
 
+require 'chronic_duration'
 require 'json'
 
 module NewRelicManagement
@@ -106,12 +107,28 @@ module NewRelicManagement
     # =>    Servers    <= #
     #######################
 
+    # => Servers with the oldest `last_reported_at` will be at the top
     def list_servers
       Client.servers.sort_by { |hsh| hsh['last_reported_at'] }.collect do |server|
         {
           name: server['name'],
-          last_reported_at: server['last_reported_at']
+          last_reported_at: server['last_reported_at'],
+          id: server['id'],
+          reporting: server['reporting']
         }
+      end
+    end
+
+    def list_nonreporting_servers
+      list_servers.reject { |server| server[:reporting] }
+    end
+
+    # => Remove Non-Reporting Servers
+    def remove_nonreporting_servers(keeptime = nil)
+      list_nonreporting_servers.each do |server|
+        next if keeptime && Time.parse(server[:last_reported_at]) >= Time.now - ChronicDuration.parse(keeptime)
+        puts "Removing Non-Reporting Server: #{server[:name]}"
+        Client.delete_server(server[:id])
       end
     end
 
