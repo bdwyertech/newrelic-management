@@ -9,5 +9,4 @@ require 'newrelic-management/cli'
 # => NewRelic Manager
 module NewRelicManagement
   # => Placeholder
-  CLI.run
 end

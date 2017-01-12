@@ -4,7 +4,7 @@
 # Gem Name:: newrelic-management
 # NewRelicManagement:: Util
 #
-# Copyright (C) 2016 Brian Dwyer - Intelligent Digital Services
+# Copyright (C) 2017 Brian Dwyer - Intelligent Digital Services
 #
 # All rights reserved - Do Not Redistribute
 #
@@ -21,7 +21,7 @@ module NewRelicManagement
     ########################
 
     # => Define JSON Parser
-    def parse_json_config(file = nil, symbolize = true)
+    def parse_json(file = nil, symbolize = true)
       return unless file && ::File.exist?(file.to_s)
       begin
         ::JSON.parse(::File.read(file.to_s), symbolize_names: symbolize)
@@ -31,7 +31,7 @@ module NewRelicManagement
     end
 
     # => Define JSON Writer
-    def write_json_config(file, object)
+    def write_json(file, object)
       return unless file && object
       begin
         File.open(file, 'w') { |f| f.write(JSON.pretty_generate(object)) }

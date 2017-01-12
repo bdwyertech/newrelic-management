@@ -3,7 +3,7 @@
 # Gem Name:: newrelic-management
 # NewRelicManagement:: Config
 #
-# Copyright (C) 2016 Brian Dwyer - Intelligent Digital Services
+# Copyright (C) 2017 Brian Dwyer - Intelligent Digital Services
 #
 # All rights reserved - Do Not Redistribute
 #
@@ -33,8 +33,19 @@ module NewRelicManagement
     # => NewRelic API Key
     define_setting :nr_api_key, nil
 
+    # => Daemonization
+    define_setting :daemonize, false
+
+    # => Silence Notifications
+    define_setting :silent, false
+
     # => Management Configuration
-    define_setting :manage, {}
+    define_setting :manage,
+                   alerts: [],
+                   alert_management_interval: '1m',
+                   cleanup: false,
+                   cleanup_age: nil,
+                   cleanup_management_interval: '1m'
 
     # => Alert Management Configuration
     define_setting :alerts,

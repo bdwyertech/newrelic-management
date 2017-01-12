@@ -4,7 +4,7 @@
 # Gem Name:: newrelic-management
 # NewRelicManagement:: Client
 #
-# Copyright (C) 2016 Brian Dwyer - Intelligent Digital Services
+# Copyright (C) 2017 Brian Dwyer - Intelligent Digital Services
 #
 # All rights reserved - Do Not Redistribute
 #
@@ -69,7 +69,7 @@ module NewRelicManagement
       end
     end
 
-    # => Add an Entitity to an Existing Alert Policy
+    # => Delete an Entitity from an Existing Alert Policy
     def alert_delete_entity(entity_id, condition_id, entity_type = 'Server')
       nr_api.delete do |req|
         req.url url('alerts_entity_conditions', entity_id)

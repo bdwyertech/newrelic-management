@@ -30,10 +30,18 @@ Gem::Specification.new do |spec|
 
   # => Dependencies
   spec.add_runtime_dependency 'chronic_duration', '~> 0.10'
+  spec.add_runtime_dependency 'deep_merge', '~> 1.1.1'
   spec.add_runtime_dependency 'faraday', '~> 0.9'
   spec.add_runtime_dependency 'faraday_middleware', '~> 0.9'
   spec.add_runtime_dependency 'net-http-persistent', '~> 2.9.4'
   spec.add_runtime_dependency 'mixlib-cli', '~> 1.7'
+
+  # => Daemonized Background Tasks
+  spec.add_runtime_dependency 'rufus-scheduler', '~> 3.3.2'
+
+  # => Notifications
+  spec.add_runtime_dependency 'os'
+  spec.add_runtime_dependency 'terminal-notifier'
 
   # => Development Dependencies
   spec.add_development_dependency 'bundler', '~> 1.12'

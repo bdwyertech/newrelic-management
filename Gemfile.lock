@@ -3,10 +3,14 @@ PATH
   specs:
     newrelic-management (0.1.0)
       chronic_duration (~> 0.10)
+      deep_merge (~> 1.1.1)
       faraday (~> 0.9)
       faraday_middleware (~> 0.9)
       mixlib-cli (~> 1.7)
       net-http-persistent (~> 2.9.4)
+      os
+      rufus-scheduler (~> 3.3.2)
+      terminal-notifier
 
 GEM
   remote: http://rubygems.org/
@@ -15,6 +19,7 @@ GEM
     chronic_duration (0.10.6)
       numerizer (~> 0.1.1)
     coderay (1.1.1)
+    deep_merge (1.1.1)
     diff-lcs (1.2.5)
     faraday (0.10.1)
       multipart-post (>= 1.2, < 3)
@@ -25,6 +30,7 @@ GEM
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
     numerizer (0.1.1)
+    os (0.9.6)
     parser (2.3.3.1)
       ast (~> 2.2)
     powerpack (0.1.1)
@@ -54,7 +60,13 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.8.1)
+    rufus-scheduler (3.3.2)
+      tzinfo
     slop (3.6.0)
+    terminal-notifier (1.7.1)
+    thread_safe (0.3.5)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
     unicode-display_width (1.1.2)
 
 PLATFORMS

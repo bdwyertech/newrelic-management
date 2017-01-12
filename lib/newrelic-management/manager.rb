@@ -4,13 +4,14 @@
 # Gem Name:: newrelic-management
 # NewRelicManagement:: Manager
 #
-# Copyright (C) 2016 Brian Dwyer - Intelligent Digital Services
+# Copyright (C) 2017 Brian Dwyer - Intelligent Digital Services
 #
 # All rights reserved - Do Not Redistribute
 #
 
 require 'chronic_duration'
 require 'json'
+require 'newrelic-management/notifier'
 
 module NewRelicManagement
   # => Manager Methods
@@ -22,21 +23,17 @@ module NewRelicManagement
     ######################
 
     # => Manage Alerts
-    def manage_alerts_fromfile
-      Util.parse_json_config(Config.config_file, false)['manage']['alerts'].each do |alert|
+    def manage_alerts
+      Array(Config.manage[:alerts]).each do |alert|
         # => Set the Filtering Policy
-        Config.alerts[:match_any] = alert['match_any'] ? true : false
+        Config.alerts[:match_any] = alert[:match_any] ? true : false
 
         # => Manage the Alerts
-        manage_alert(alert['name'], alert['labels'], alert['exclude'])
+        manage_alert(alert[:name], alert[:labels], alert[:exclude])
       end
     end
 
-    def test_manage_alert
-      manage_alert('RAM Utilization', ['Environment:Production'])
-    end
-
-    def manage_alert(alert, labels, exclude = []) # rubocop: disable AbcSize, MethodLength
+    def manage_alert(alert, labels, exclude = []) # rubocop: disable AbcSize
       conditions = find_alert_conditions(alert) || return
       tagged_entities = find_labeled(labels)
       excluded = find_excluded(exclude)
@@ -54,12 +51,16 @@ module NewRelicManagement
     end
 
     def add_to_alert(entities, condition_id, type = 'Server')
+      return if entities.empty?
+      Notifier.msg(entities, 'Adding Server(s) to Alert')
       Array(entities).each do |entity|
         Client.alert_add_entity(entity, condition_id, type)
       end
     end
 
     def delete_from_alert(entities, condition_id, type = 'Server')
+      return if entities.empty?
+      Notifier.msg(entities, 'Deleting Server(s) from Alert')
       Array(entities).each do |entity|
         Client.alert_delete_entity(entity, condition_id, type)
       end
@@ -88,19 +89,6 @@ module NewRelicManagement
     # => List All Alert Conditions for an Alert Policy
     def list_alert_conditions(policy_id)
       Client.alert_conditions(policy_id)
-    end
-
-    def find_excluded(excluded)
-      result = []
-      Array(excluded).each do |exclude|
-        if exclude.include?(':')
-          find_labeled(exclude).each { |x| result << x }
-          next
-        end
-        res = Client.get_server(exclude)
-        result << res['id'] if res
-      end
-      result
     end
 
     #######################
@@ -132,6 +120,20 @@ module NewRelicManagement
       end
     end
 
+    # => Find Servers which should be excluded from Management
+    def find_excluded(excluded)
+      result = []
+      Array(excluded).each do |exclude|
+        if exclude.include?(':')
+          find_labeled(exclude).each { |x| result << x }
+          next
+        end
+        res = Client.get_server(exclude)
+        result << res['id'] if res
+      end
+      result
+    end
+
     ######################
     # =>    Labels    <= #
     ######################
@@ -142,7 +144,7 @@ module NewRelicManagement
 
     # => Find Servers Matching a Label
     # => Example: find_labeled(['Role:API', 'Environment:Production'])
-    def find_labeled(labels, match_any = Config.alerts[:match_any]) # rubocop: disable AbcSize, MethodLength
+    def find_labeled(labels, match_any = Config.alerts[:match_any]) # rubocop: disable AbcSize
       list = list_labels
       labeled = []
       Array(labels).select do |lbl|
