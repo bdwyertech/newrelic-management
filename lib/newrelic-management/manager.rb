@@ -24,9 +24,9 @@ module NewRelicManagement
 
     # => Manage Alerts
     def manage_alerts
-      Array(Config.manage[:alerts]).each do |alert|
+      Array(Config.alerts).each do |alert|
         # => Set the Filtering Policy
-        Config.alerts[:match_any] = alert[:match_any] ? true : false
+        Config.transient[:alert_match_any] = alert[:match_any] ? true : false
 
         # => Manage the Alerts
         manage_alert(alert[:name], alert[:labels], alert[:exclude])
@@ -144,7 +144,7 @@ module NewRelicManagement
 
     # => Find Servers Matching a Label
     # => Example: find_labeled(['Role:API', 'Environment:Production'])
-    def find_labeled(labels, match_any = Config.alerts[:match_any]) # rubocop: disable AbcSize
+    def find_labeled(labels, match_any = Config.transient[:alert_match_any]) # rubocop: disable AbcSize
       list = list_labels
       labeled = []
       Array(labels).select do |lbl|

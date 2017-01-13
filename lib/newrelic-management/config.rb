@@ -39,18 +39,36 @@ module NewRelicManagement
     # => Silence Notifications
     define_setting :silent, false
 
-    # => Management Configuration
-    define_setting :manage,
-                   alerts: [],
-                   alert_management_interval: '1m',
-                   cleanup: false,
-                   cleanup_age: nil,
-                   cleanup_management_interval: '1m'
+    #
+    # => Alert Management
+    #
 
-    # => Alert Management Configuration
-    define_setting :alerts,
-                   # => Find entities matching any tag, instead of all tags
-                   match_any: false
+    # => Array of Alerts to Manage
+    define_setting :alerts, []
+
+    # => How often to run when Daemonized
+    define_setting :alert_management_interval, '1m'
+
+    # => Find entities matching any tag, instead of all tags
+    define_setting :alert_match_any, false
+
+    #
+    # => Stale Server Management
+    #
+
+    # => Enable Stale Server Cleanup
+    define_setting :cleanup, false
+
+    # => Set a Time to keep Non-Reporting Servers
+    define_setting :cleanup_age, nil
+
+    # => How often to run when Daemonized
+    define_setting :cleanup_interval, '1m'
+
+    #
+    # => Transient Configuration
+    #
+    define_setting :transient, {}
 
     #
     # => Facilitate Dynamic Addition of Configuration Values
