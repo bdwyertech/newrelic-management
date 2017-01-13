@@ -1,26 +1,25 @@
 # newrelic-manager
-* NewRelic Management Utility
+## NewRelic Management Utility
 * Provides functionality not inherently available through the NewRelic UI
 
 ## Background
-Initially, the goal here is to allow servers to be added to alert conditions based on tag.  For some reason, NewRelic does not allow much dynamicism in this regard.
+The goal here is to allow servers to be added to alert conditions based on tag.  For some reason, NewRelic does not allow much dynamicism in this regard.
 
-This can be run as a cron.
+Additionally, non-reporting, stale servers can build up in the NewRelic console.  Let's create a programmatic solution to remove servers that haven't reported recently or in X-amount of time.
 
-## TODO
-Allow exclusions from being added back into an alert
-- Exclusions based on: Tag, Server Name, Server ID
+## Features
+* **Adding & Excluding Servers from Alerts, based on:** 
+  * Tag
+  * Server Name
+  * Server ID
 
-Additionally, an automated cleanup functionality can be added.
- - Time-based.  Remove servers which haven't reported in x-amount of time.
- - Filter-based.  Allow a filter to be applied to this, much in the same way as the the alert conditions function.
+* **Automatic Removal of Stale, Non-Reporting Servers**
 
-Run as a Service
- - Maybe figure a way to make Ruby run certain functions every so often, without some ridiculous sleep while loop.
+* **Running either of the above functions in a daemonized, periodic fashion, e.g. every 10 minutes.**
 
 
 ## Security
-You should lock down permissions on all configuration files in this project to only the user which this runs as...
+If daemonizing, you should lock down permissions on all configuration files in this project to only the user which this runs as...
 
 ## Installation
 
@@ -40,7 +39,7 @@ Or install it yourself as:
 
 ## Usage
 
-    $ newrelic-management --nr-cfg-file /etc/newrelic/rabbitmq.yml
+    $ newrelic-management -c /path/to/config.json
 
 ## Development
 
