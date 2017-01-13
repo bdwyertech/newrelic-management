@@ -8,15 +8,17 @@
 # All rights reserved - Do Not Redistribute
 #
 
-require 'terminal-notifier'
+require 'newrelic-management/config'
 require 'os'
+require 'terminal-notifier'
 
 module NewRelicManagement
   # => Notification Methods
   module Notifier
     module_function
 
-    def terminal_notification(message)
+    def terminal_notification(message, subtitle = nil)
+      message = "#{subtitle}: #{message}" if subtitle && (message != subtitle)
       puts message
     end
 
@@ -26,7 +28,7 @@ module NewRelicManagement
 
     def msg(message, subtitle = message, title = 'NewRelic Management')
       # => Stdout Messages
-      terminal_notification(message)
+      terminal_notification(message, subtitle)
 
       return if Config.silent
 

@@ -8,6 +8,9 @@
 # All rights reserved - Do Not Redistribute
 #
 
+require 'newrelic-management/config'
+require 'newrelic-management/manager'
+require 'newrelic-management/notifier'
 require 'rufus-scheduler'
 
 module NewRelicManagement
@@ -23,7 +26,6 @@ module NewRelicManagement
       # => Alerts Management
       alerts_interval = Config.alert_management_interval
       scheduler.every alerts_interval, overlap: false do
-        Notifier.msg('Managing Alerts')
         Manager.manage_alerts
       end
 
@@ -33,7 +35,6 @@ module NewRelicManagement
         cleanup_age = Config.cleanup_age
 
         scheduler.every cleanup_interval, overlap: false do
-          Notifier.msg('Cleaning Up')
           Manager.remove_nonreporting_servers(cleanup_age)
         end
       end

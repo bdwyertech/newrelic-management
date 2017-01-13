@@ -8,7 +8,7 @@ The goal here is to allow servers to be added to alert conditions based on tag. 
 Additionally, non-reporting, stale servers can build up in the NewRelic console.  Let's create a programmatic solution to remove servers that haven't reported recently or in X-amount of time.
 
 ## Features
-* **Adding & Excluding Servers from Alerts, based on:** 
+* **Adding & Excluding Servers from Alerts, based on:**
   * Tag
   * Server Name
   * Server ID

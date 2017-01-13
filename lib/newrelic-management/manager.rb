@@ -11,6 +11,8 @@
 
 require 'chronic_duration'
 require 'json'
+require 'newrelic-management/client'
+require 'newrelic-management/config'
 require 'newrelic-management/notifier'
 
 module NewRelicManagement
@@ -139,7 +141,7 @@ module NewRelicManagement
     ######################
 
     def list_labels
-      NewRelicManagement::Client.labels
+      Client.labels
     end
 
     # => Find Servers Matching a Label

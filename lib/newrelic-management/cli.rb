@@ -11,10 +11,8 @@
 
 require 'deep_merge'
 require 'mixlib/cli'
-require 'newrelic-management/client'
 require 'newrelic-management/config'
 require 'newrelic-management/controller'
-require 'newrelic-management/manager'
 require 'newrelic-management/util'
 
 module NewRelicManagement

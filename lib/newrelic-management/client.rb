@@ -9,11 +9,9 @@
 # All rights reserved - Do Not Redistribute
 #
 
-require 'rubygems'
-require 'bundler/setup'
 require 'faraday'
 require 'faraday_middleware'
-require 'newrelic-management/version'
+require 'newrelic-management/config'
 require 'uri'
 
 module NewRelicManagement
