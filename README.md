@@ -17,6 +17,44 @@ Additionally, non-reporting, stale servers can build up in the NewRelic console.
 
 * **Running either of the above functions in a daemonized, periodic fashion, e.g. every 10 minutes.**
 
+## Sample Configuration File
+```json
+{
+  "nr_api_key": "abc123def456",
+  "cleanup": true,
+  "cleanup_interval": "5m",
+  "alert_management_interval": "5m",
+  "alerts": [
+    {
+      "name": "Disk Space",
+      "match_any": true,
+      "labels": [
+        "Environment:Production",
+        "Environment:Staging"
+      ]
+    },
+    {
+      "name": "RAM Utilization",
+      "match_any": true,
+      "labels": [
+        "Environment:Production",
+        "Environment:Staging"
+      ],
+      "exclude": [
+        "Role:Consumers",
+        "Role:ETL"
+      ]
+    },
+    {
+      "name": "Production - DB",
+      "labels": [
+        "Environment:Production",
+        "Role:Database"
+      ]
+    }
+  ]
+}
+```
 
 ## Security
 If daemonizing, you should lock down permissions on all configuration files in this project to only the user which this runs as...
