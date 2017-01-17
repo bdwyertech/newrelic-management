@@ -71,7 +71,7 @@ module NewRelicManagement
     # => Find Matching Alert (Name or ID)
     def find_alert(alert)
       id = Integer(alert) rescue nil # rubocop: disable RescueModifier
-      Client.alert_policies.find do |policy|
+      list_alerts.find do |policy|
         return policy if id && policy['id'] == id
         policy['name'].casecmp(alert).zero?
       end
@@ -85,12 +85,12 @@ module NewRelicManagement
 
     # => Simply List Alerts
     def list_alerts
-      Client.alert_policies
+      Util.cachier('list_alerts') { Client.alert_policies }
     end
 
     # => List All Alert Conditions for an Alert Policy
     def list_alert_conditions(policy_id)
-      Client.alert_conditions(policy_id)
+      Util.cachier("alert_conditions_#{policy_id}") { Client.alert_conditions(policy_id) }
     end
 
     #######################
@@ -99,13 +99,15 @@ module NewRelicManagement
 
     # => Servers with the oldest `last_reported_at` will be at the top
     def list_servers
-      Client.servers.sort_by { |hsh| hsh['last_reported_at'] }.collect do |server|
-        {
-          name: server['name'],
-          last_reported_at: server['last_reported_at'],
-          id: server['id'],
-          reporting: server['reporting']
-        }
+      Util.cachier('list_servers') do
+        Client.servers.sort_by { |hsh| hsh['last_reported_at'] }.collect do |server|
+          {
+            name: server['name'],
+            last_reported_at: server['last_reported_at'],
+            id: server['id'],
+            reporting: server['reporting']
+          }
+        end
       end
     end
 
@@ -141,7 +143,7 @@ module NewRelicManagement
     ######################
 
     def list_labels
-      Client.labels
+      Util.cachier('list_labels') { Client.labels }
     end
 
     # => Find Servers Matching a Label
