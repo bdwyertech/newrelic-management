@@ -54,7 +54,7 @@ module NewRelicManagement
 
     def add_to_alert(entities, condition_id, type = 'Server')
       return if entities.empty?
-      Notifier.msg(entities, 'Adding Server(s) to Alert')
+      Notifier.add_servers(entities)
       Array(entities).each do |entity|
         Client.alert_add_entity(entity, condition_id, type)
       end
@@ -62,7 +62,7 @@ module NewRelicManagement
 
     def delete_from_alert(entities, condition_id, type = 'Server')
       return if entities.empty?
-      Notifier.msg(entities, 'Deleting Server(s) from Alert')
+      Notifier.remove_servers(entities)
       Array(entities).each do |entity|
         Client.alert_delete_entity(entity, condition_id, type)
       end
@@ -117,7 +117,7 @@ module NewRelicManagement
     def remove_nonreporting_servers(keeptime = nil)
       list_nonreporting_servers.each do |server|
         next if keeptime && Time.parse(server[:last_reported_at]) >= Time.now - ChronicDuration.parse(keeptime)
-        puts "Removing Non-Reporting Server: #{server[:name]}"
+        Notifier.msg(server[:name], 'Removing Stale, Non-Reporting Server')
         Client.delete_server(server[:id])
       end
     end
