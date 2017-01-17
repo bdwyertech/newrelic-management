@@ -9,7 +9,6 @@
 # All rights reserved - Do Not Redistribute
 #
 
-require 'deep_merge'
 require 'mixlib/cli'
 require 'newrelic-management/config'
 require 'newrelic-management/controller'
@@ -73,11 +72,8 @@ module NewRelicManagement
       # => Parse JSON Config File (If Specified and Exists)
       json_config = Util.parse_json(cli.config[:config_file] || Config.config_file)
 
-      # => Grab the Default Values
-      default = Config.options
-
       # => Merge Configuration (CLI Wins)
-      config = [json_config, cli.config].compact.reduce(:merge).deep_merge(default)
+      config = [json_config, cli.config].compact.reduce(:merge)
 
       # => Apply Configuration
       config.each { |k, v| Config.send("#{k}=", v) }

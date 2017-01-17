@@ -30,7 +30,6 @@ Gem::Specification.new do |spec|
 
   # => Dependencies
   spec.add_runtime_dependency 'chronic_duration', '~> 0.10'
-  spec.add_runtime_dependency 'deep_merge', '~> 1.1.1'
   spec.add_runtime_dependency 'faraday', '~> 0.9'
   spec.add_runtime_dependency 'faraday_middleware', '~> 0.9'
   spec.add_runtime_dependency 'net-http-persistent', '~> 2.9.4'
