@@ -1,6 +1,16 @@
-# newrelic-manager
+# newrelic-management
 ## NewRelic Management Utility
 * Provides functionality not inherently available through the NewRelic UI
+
+[![Gem Version](http://img.shields.io/gem/v/newrelic-management.svg)][gem]
+[![Build Status](http://img.shields.io/travis/bdwyertech/newrelic-management.svg)][travis]
+[![Gitter](https://img.shields.io/badge/Gitter-bdwyertech%2Fnewrelic--management-brightgreen.svg)][gitter]
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)][license]
+
+[gem]: https://rubygems.org/gems/newrelic-management
+[travis]: http://travis-ci.org/bdwyertech/newrelic-management
+[gitter]: https://gitter.im/bdwyertech/newrelic-management
+[license]: https://raw.githubusercontent.com/bdwyertech/newrelic-management/master/LICENSE.txt
 
 ## Background
 The goal here is to allow servers to be added to alert conditions based on tag.  For some reason, NewRelic does not allow much dynamicism in this regard.
