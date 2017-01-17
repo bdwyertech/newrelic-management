@@ -16,6 +16,32 @@ module NewRelicManagement
   module Util
     module_function
 
+    #####################
+    # =>    Cache    <= #
+    #####################
+
+    # => Cache Return of a Function
+    def cachier(label, time = 30, &block)
+      var = "@_cachier_#{label}"
+      cache = instance_variable_get(var) || {}
+      return cache['data'] if cache['timestamp'] && Time.now <= cache['timestamp'] + time
+      cache['timestamp'] = Time.now
+      cache['data'] = block.yield
+      instance_variable_set(var, cache)
+      cache['data']
+    end
+
+    # => Clear Cache
+    def cachier!(var = nil)
+      if var && instance_variable_get("@#{var}")
+        # => Clear the Single Variable
+        remove_instance_variable("@#{var}")
+      else
+        # => Clear the Whole Damned Cache
+        instance_variables.each { |x| remove_instance_variable(x) }
+      end
+    end
+
     ########################
     # =>    File I/O    <= #
     ########################
