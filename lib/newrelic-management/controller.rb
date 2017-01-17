@@ -11,6 +11,7 @@
 require 'newrelic-management/config'
 require 'newrelic-management/manager'
 require 'newrelic-management/notifier'
+require 'os'
 require 'rufus-scheduler'
 
 module NewRelicManagement
@@ -19,7 +20,10 @@ module NewRelicManagement
     module_function
 
     # => Daemonization for Periodic Management
-    def daemon # rubocop: disable MethodLength
+    def daemon # rubocop: disable AbcSize, MethodLength
+      # => Windows Workaround (https://github.com/bdwyertech/newrelic-management/issues/1)
+      ENV['TZ'] = 'UTC' if OS.windows? && !ENV['TZ']
+
       scheduler = Rufus::Scheduler.new
       Notifier.msg('Daemonizing Process')
 
@@ -51,7 +55,7 @@ module NewRelicManagement
       Manager.manage_alerts
 
       # => Manage
-      Manager.remove_nonreporting_servers(Config.cleanup_age)
+      Manager.remove_nonreporting_servers(Config.cleanup_age) if Config.cleanup
     end
   end
 end
