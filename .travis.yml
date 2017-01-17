@@ -1,0 +1,38 @@
+language: ruby
+cache: bundler
+dist: trusty
+sudo: false
+
+rvm:
+  - 2.3
+
+before_script:
+  - ruby -v
+  - which ruby
+  - gem install bundler --no-ri --no-rdoc
+  - bundle install --jobs $(nproc) --path vendor/bundle
+
+script:
+  - bundle exec rubocop
+
+before_deploy:
+  - bundle exec rake build
+  - export RELEASE_FILE=$(ls pkg/*.gem)
+  - echo "deploying $RELEASE_FILE to GitHub releases"
+deploy:
+  provider: releases
+  api_key:
+    secure: S+0jonLbS7kBoIpai+4QG9HJykU/ZIh/xxBDXyKxdrwiMAcDpFXc0QIxS/rqOt8fFwgHF56iys5xMnWv4ERg0FH91j7rQqMTXQdESaG1sUu5wky+iXVtSfmTkXjRSJDeUkcdg3b+nxpEYbqD9H8tS0dTvAURQS4XuGG6H+r5WvOrvMw6ZukHQsn0mQxN2TVzRxR3uKc/fGiUFu9PxY9W4iblYZIWIF36y3gsiyMu78W4Od40LJi4K9DZ04sPkOHQDuOfQ9h6sOsAf4siGHifJPHj7r6LAX6KcVjZFj3Lzy379MpkLR4B57Ee7d70L0kRhP4qVMs+HEDJiz0ZRSkE1ql1qcUr8MYI6mWljHCDthf3/3zFgKdc14DiMK1bF20i4/VUZorr2NB3DNbJ2B16vx27wLKm4+7zDVOfDEjiZAzxutUdWnfNJDMVxb+B/AXF21SCrQAfi5e08i1sp0HH9f3VN8jrnmSrVl9NhjOy+Ufow0fH5Es3pj7hluS8cxHuIuJobPJoYUI36T3hai/WqHs8p4P8b70cwFWO2dtmt4OTBhAgcU2oASYQ3UCD8vqzttBUMRkbjOG0jUYSdxkRzYMXJFLM1iM7/9q3K9Dp/moZL9OGttDiU+lfNx3SboIr0EktN4lBGYSPPvfbT/H43UYquHBL0Ug1eEOX43ZSVU8=
+  file_glob: true
+  file: "${RELEASE_FILE}"
+  skip_cleanup: true
+  on:
+    repo: bdwyertech/newrelic-management
+    tags: true
+notifications:
+  webhooks:
+    urls:
+    - https://webhooks.gitter.im/e/dc143a4bf4fb95b75249
+    on_success: change
+    on_failure: always
+    on_start: never
