@@ -1,5 +1,7 @@
 # newrelic-management
 ## NewRelic Management Utility
+
+[![Join the chat at https://gitter.im/newrelic-management/Lobby](https://badges.gitter.im/newrelic-management/Lobby.svg)](https://gitter.im/newrelic-management/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 * Provides functionality not inherently available through the NewRelic UI
 
 [![Gem Version](http://img.shields.io/gem/v/newrelic-management.svg)][gem]
